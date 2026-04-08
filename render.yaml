@@ -1,5 +1,6 @@
 services:
   - type: web
+    plan: free # <--- This is the magic line you were missing
     name: blizzup-bikes-api
     runtime: node
     rootDir: backend
