@@ -281,6 +281,6 @@ app.post('/api/auth/login', async (req, res) => {
 // Health check
 app.get('/health', (req, res) => res.send('Backend is running.'));
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
 });
