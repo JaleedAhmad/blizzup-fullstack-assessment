@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #1e3a8a;
+  --secondary: #d97706;
+  --accent: #2563eb;
+  --background: #f8fafc;
+  --text: #0f172a;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-all hover:bg-blue-800 active:scale-95;
+  }
+}
