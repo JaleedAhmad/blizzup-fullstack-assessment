@@ -278,6 +278,8 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+app.get('/', (req, res) => res.send('Blizzup API is live!'));
+
 // Health check
 app.get('/health', (req, res) => res.send('Backend is running.'));
 
