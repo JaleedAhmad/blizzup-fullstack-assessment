@@ -44,6 +44,25 @@ const getBikesData = async () => {
   }
 };
 
+// --- UTILITY: Gemini Retry Helper ---
+const callGeminiWithRetry = async (fn, maxRetries = 3) => {
+  let delay = 1000;
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const isRetryable = err.message.includes("503") || err.message.includes("429") || err.message.includes("quota");
+      if (isRetryable && i < maxRetries - 1) {
+        console.log(`Gemini busy/limited (attempt ${i + 1}/${maxRetries}). Retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        delay *= 2; 
+        continue;
+      }
+      throw err;
+    }
+  }
+};
+
 // Routes
 
 // 1. Get all bikes (Bike Listing)
@@ -173,25 +192,6 @@ CRITICAL RULES:
       tools: bikeTools
     });
 
-    // Helper for retries
-    const callGeminiWithRetry = async (fn, maxRetries = 3) => {
-      let delay = 1000;
-      for (let i = 0; i < maxRetries; i++) {
-        try {
-          return await fn();
-        } catch (err) {
-          const isRetryable = err.message.includes("503") || err.message.includes("429");
-          if (isRetryable && i < maxRetries - 1) {
-            console.log(`Gemini busy (attempt ${i + 1}/${maxRetries}). Retrying in ${delay}ms...`);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            delay *= 2; // Exponential backoff
-            continue;
-          }
-          throw err;
-        }
-      }
-    };
-
     // Filter history to ensure it starts with a 'user' role (Gemini SDK requirement)
     const formattedHistory = history.map(msg => ({
       role: msg.role === 'bot' ? 'model' : 'user',
@@ -267,7 +267,7 @@ app.post('/api/bikes/ai-add', async (req, res) => {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
       You are a technical data assistant for a premium bike dealership.
@@ -291,7 +291,7 @@ app.post('/api/bikes/ai-add', async (req, res) => {
       Return ONLY a JSON array of these objects. No markdown.
     `;
 
-    const result = await model.generateContent(prompt);
+    const result = await callGeminiWithRetry(() => model.generateContent(prompt));
     const response = await result.response;
     const text = response.text();
 
