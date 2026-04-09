@@ -171,8 +171,11 @@ app.post('/api/bikes/ai-add', async (req, res) => {
         "fuel_avg": Number (km/l),
         "transmission": "Manual/Automatic",
         "colors": ["Color1", "Color2"],
-        "thumbnail": "A generated URL precisely in this format: https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20[Brand]%20[Model]%20motorcycle?width=800&height=450&nologo=true (Replace [Brand] and [Model] with actual names, URL encoded, no spaces)"
+        "thumbnail": "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20[NAME]%20[MODEL]%20motorcycle?width=800&height=450&nologo=true"
       }
+      
+      CRITICAL: In the "thumbnail" URL, you MUST replace [NAME] and [MODEL] with the actual bike name and model you generated. 
+      The resulting URL must be valid and URL-encoded.
       
       Return ONLY a JSON array of these objects. No markdown.
     `;
