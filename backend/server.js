@@ -217,8 +217,25 @@ CRITICAL RULES:
       call = resultResponse.functionCalls() ? resultResponse.functionCalls()[0] : null;
     }
 
-    const finalJson = JSON.parse(resultResponse.text());
-    res.json(finalJson);
+    // Robust JSON parsing to handle extra text/markdown
+    let rawText = resultResponse.text();
+    try {
+      // Find the first { and last } to extract ONLY the JSON object
+      const start = rawText.indexOf('{');
+      const end = rawText.lastIndexOf('}');
+      if (start !== -1 && end !== -1) {
+        rawText = rawText.substring(start, end + 1);
+      }
+      
+      const finalJson = JSON.parse(rawText);
+      res.json(finalJson);
+    } catch (parseErr) {
+      console.error("Parse Error. Raw text:", rawText);
+      res.status(500).json({ 
+        message: "AI returned invalid format", 
+        reply: "Sorry, I had a calculation error. Could you try rephrasing that?" 
+      });
+    }
 
   } catch (err) {
     console.error("Agentic Error:", err.message);
