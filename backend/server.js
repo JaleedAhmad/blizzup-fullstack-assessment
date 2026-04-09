@@ -145,7 +145,7 @@ Step 5 & 6: Show Comparison & Final Recommendation. Output the comparison table 
 
 ### SCORING CRITERIA (Out of 100 points total)
 You must calculate and explain the score for each category.
-1. Price (20 pts): Lower price gets a higher score relative to outer bikes in the set.
+1. Price (20 pts): Lower price gets a higher score relative to other bikes in the set.
 2. Fuel Average (20 pts): Higher km/l gets a higher score.
 3. Engine Power (CC) (20 pts): Score based on the best CC for the price range.
 4. Value for Money (20 pts): Specs vs. price ratio.
