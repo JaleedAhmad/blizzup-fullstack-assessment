@@ -176,11 +176,18 @@ CRITICAL RULES:
       tools: bikeTools
     });
 
+    // Filter history to ensure it starts with a 'user' role (Gemini SDK requirement)
+    const formattedHistory = history.map(msg => ({
+      role: msg.role === 'bot' ? 'model' : 'user',
+      parts: [{ text: typeof msg.text === 'string' ? msg.text : JSON.stringify(msg) }]
+    }));
+
+    // Find the first 'user' message index
+    const firstUserIndex = formattedHistory.findIndex(h => h.role === 'user');
+    const validHistory = firstUserIndex !== -1 ? formattedHistory.slice(firstUserIndex) : [];
+
     const chat = model.startChat({
-      history: history.map(msg => ({
-        role: msg.role === 'bot' ? 'model' : 'user',
-        parts: [{ text: typeof msg.text === 'string' ? msg.text : JSON.stringify(msg) }]
-      })),
+      history: validHistory,
       generationConfig: { responseMimeType: "application/json" }
     });
 
