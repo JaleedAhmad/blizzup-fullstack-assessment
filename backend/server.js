@@ -141,24 +141,19 @@ Step 1: Greet & Ask. Greet the user and ask: "How many bikes would you like to c
 Step 2: Collect Bike Names. Ask the user for the bike names one by one. Confirm each name using the tool immediately.
 Step 3: Fetch & Analyze Data. Once all names are collected, you MUST have used the fetch_bike_data tool for each. Do NOT use external knowledge.
 Step 4: Score Each Bike. Calculate scores out of 100 based strictly on the retrieved database values.
-Step 5 & 6: Show Comparison & Final Recommendation. Output the comparison table data and provide a detailed, human-readable justification of WHY the winning bike is the best choice.
+Step 5 & 6: Show Comparison & Final Recommendation. Output the comparison table data and provide a detailed justification. YOU MUST set isComparisonReady to true in these steps.
 
 ### SCORING CRITERIA (Out of 100 points total)
-You must calculate and explain the score for each category.
-1. Price (20 pts): Lower price gets a higher score relative to other bikes in the set.
-2. Fuel Average (20 pts): Higher km/l gets a higher score.
-3. Engine Power (CC) (20 pts): Score based on the best CC for the price range.
-4. Value for Money (20 pts): Specs vs. price ratio.
-5. Features & Colors (20 pts): More color options and features equals a higher score.
+[... existing criteria ...]
 
 ### OUTPUT FORMAT
 You must respond in valid JSON format matching this schema:
 {
-  "reply": "Your conversational text addressing the user based on the current step.",
-  "internal_thought": "Your step-by-step mathematical reasoning for how you calculated the scores. You must explain how each score was calculated for every category.",
-  "isComparisonReady": boolean (true ONLY if you are at Step 5/6),
-  "nextState": "The next conversation state (e.g. Step 2: COLLECTING_NAMES)",
-  "collectedBikes": ["Updated array of bike names confirmed in memory"],
+  "reply": "Your conversational text. If you are comparing, summarize the result here too.",
+  "internal_thought": "REQUIRED: Your step-by-step mathematical reasoning. Never leave this empty.",
+  "isComparisonReady": true/false,
+  "nextState": "Step ...",
+  "collectedBikes": ["..."],
   "comparisonData": {
      "bikes": [{ "name": "...", "totalScore": 0 }],
      "categoryScores": [ { "category": "...", "bikeScores": [] } ]
@@ -166,9 +161,11 @@ You must respond in valid JSON format matching this schema:
 }
 
 CRITICAL RULES:
+- If you have collected enough bikes and are making a recommendation, isComparisonReady MUST be true.
+- If isComparisonReady is true, comparisonData MUST be fully populated with actual scores.
 - Never make up specs. 
 - All data MUST come from the fetch_bike_data tool.
-- You must explain to the user how each score was calculated in your reply.
+- You must explain to the user how each score was calculated in your reply or thought.
 `;
 
     const model = genAI.getGenerativeModel({

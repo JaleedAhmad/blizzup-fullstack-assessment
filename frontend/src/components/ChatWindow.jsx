@@ -107,7 +107,7 @@ const ChatWindow = () => {
                 </div>
                 
                 {/* Agentic Thinking Accordion */}
-                {msg.internal_thought && (
+                {(msg.internal_thought || msg.reply?.includes("Analysis:") || msg.text?.includes("Calculation")) && msg.internal_thought && (
                   <div className="border border-slate-200 rounded-xl bg-white overflow-hidden shadow-sm transition-all duration-300">
                     <button 
                       onClick={() => setShowThinking(showThinking === idx ? null : idx)}
@@ -128,7 +128,7 @@ const ChatWindow = () => {
                 )}
 
                 {/* Comparison UI */}
-                {msg.isComparisonReady && msg.comparisonData && (
+                {(msg.isComparisonReady || (msg.comparisonData && msg.comparisonData.bikes?.length > 0)) && msg.comparisonData && (
                   <div className="mt-4 space-y-4 animate-in fade-in zoom-in-95 duration-700">
                     <div className="overflow-hidden bg-white rounded-2xl border border-slate-200 shadow-xl overflow-x-auto">
                       <table className="w-full text-sm text-left border-collapse">
