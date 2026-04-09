@@ -123,7 +123,7 @@ Rules:
 `;
 
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash-latest",
+      model: "gemini-flash-latest",
       generationConfig: { responseMimeType: "application/json" },
       systemInstruction: systemInstruction 
     });
@@ -156,7 +156,7 @@ app.post('/api/bikes/ai-add', async (req, res) => {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
     const prompt = `
       You are a technical data assistant for a premium bike dealership.
