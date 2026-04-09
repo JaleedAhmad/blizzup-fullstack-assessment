@@ -75,76 +75,147 @@ app.get('/api/bikes/:id', async (req, res) => {
   }
 });
 
-// 3. AI Chat Endpoint
+// --- AGENTIC TOOLS ---
+const bikeTools = [
+  {
+    functionDeclarations: [
+      {
+        name: "fetch_bike_data",
+        description: "Retrieves specific bike technical specifications from the inventory database using a bike name or model.",
+        parameters: {
+          type: "OBJECT",
+          properties: {
+            bikeName: {
+              type: "STRING",
+              description: "The name of the bike to search for (e.g., 'Honda CD 70' or 'Yamaha YBR')."
+            }
+          },
+          required: ["bikeName"]
+        }
+      }
+    ]
+  }
+];
+
+const localFetchBike = async (name) => {
+  try {
+    const bikes = await getBikesData();
+    const query = name.toLowerCase();
+    // Fuzzy match: check if name or model is included
+    const bike = bikes.find(b => 
+      b.name.toLowerCase().includes(query) || 
+      b.model.toLowerCase().includes(query) ||
+      query.includes(b.name.toLowerCase())
+    );
+    if (!bike) return { error: `Bike '${name}' not found in Blizzup inventory.` };
+    return {
+      name: bike.name,
+      model: bike.model,
+      price: bike.price,
+      fuel_avg: bike.fuel_avg,
+      engine_cc: bike.engine_cc,
+      colors: bike.colors,
+      transmission: bike.transmission || "Manual",
+      status: "Verified in Database"
+    };
+  } catch (err) {
+    return { error: "Database retrieval failed." };
+  }
+};
+
+// 3. AI Chat Endpoint (Agentic Version)
 app.post('/api/chat', async (req, res) => {
-  const { message, history = [] } = req.body;
+  const { message, history = [], sessionState = "Step 1: GREETING", bikesInMemory = [] } = req.body;
   if (!message) return res.status(400).json({ message: "Message is required" });
 
   try {
-    const bikesData = await getBikesData();
-    const cleanBikesData = bikesData.map(b => ({
-      name: b.name, model: b.model, price: b.price, fuel_avg: b.fuel_avg, colors: b.colors, engine_cc: b.engine_cc
-    }));
-
     const systemInstruction = `
-You are a "Bike Expert AI Assistant" for Blizzup Bikes, a premium bike dealership in Pakistan.
-Your goal is to help users compare bikes, score them out of 100, and recommend the best one.
+You are the "Bike Expert AI Agent" for Blizzup Technologies. You are a true agent capable of fetching real-time data from our database using the fetch_bike_data tool.
 
-Available Inventory Data:
-${JSON.stringify(cleanBikesData, null, 2)}
+You must follow a strict 6-step conversation flow. Do not skip steps.
+CURRENT CONVERSATION STATE: ${sessionState}
+CURRENT BIKES IN MEMORY: ${JSON.stringify(bikesInMemory)}
 
-Rules:
-1. Determine how many and which bikes the user wants to compare (from 2 to 5). If they don't specify, ask them first.
-2. If the user asks for a bike NOT in the inventory, add it to "unrecognizedBikes".
-3. Check previous conversation context.
-4. If the user is ready to compare with specific requested bikes, calculate a score out of 100 for each bike based on:
-   - Price (20 pts): Lower price = higher score.
-   - Fuel Average (20 pts): Higher km/l = higher score.
-   - Engine Power (20 pts): Best CC for its class/price.
-   - Value for Money (20 pts): Overall specs-to-price ratio.
-   - Features & Colors (20 pts): More colors and features = higher score.
-5. You must return your response strictly as JSON matching this schema:
+### CONVERSATION FLOW RULES
+Step 1: Greet & Ask. Greet the user and ask: "How many bikes would you like to compare? (2-5)"
+Step 2: Collect Bike Names. Ask the user for the bike names one by one. Confirm each name using the tool immediately.
+Step 3: Fetch & Analyze Data. Once all names are collected, you MUST have used the fetch_bike_data tool for each. Do NOT use external knowledge.
+Step 4: Score Each Bike. Calculate scores out of 100 based strictly on the retrieved database values.
+Step 5 & 6: Show Comparison & Final Recommendation. Output the comparison table data and provide a detailed, human-readable justification of WHY the winning bike is the best choice.
+
+### SCORING CRITERIA (Out of 100 points total)
+You must calculate and explain the score for each category.
+1. Price (20 pts): Lower price gets a higher score relative to outer bikes in the set.
+2. Fuel Average (20 pts): Higher km/l gets a higher score.
+3. Engine Power (CC) (20 pts): Score based on the best CC for the price range.
+4. Value for Money (20 pts): Specs vs. price ratio.
+5. Features & Colors (20 pts): More color options and features equals a higher score.
+
+### OUTPUT FORMAT
+You must respond in valid JSON format matching this schema:
 {
-  "reply": "Conversational response asking questions or explaining the comparison",
-  "isComparison": boolean (true if providing table scores for 2-5 bikes, false if just chatting/gathering requirements),
-  "unrecognizedBikes": ["array of exact bike names requested by user that are not in inventory (can be empty)"],
-  "bikes": [ 
-    { "name": "Honda CD 70", "totalScore": 85 }
-  ],
-  "scores": [
-    {
-      "category": "Price",
-      "bikeScores": [95, 75] // Index must map directly to bikes array above
-    },
-    // Must include 5 categories: Price, Fuel Average, Engine Power, Value for Money, Features & Colors
-  ],
-  "verdict": "Detailed justification on which bike is the best"
+  "reply": "Your conversational text addressing the user based on the current step.",
+  "internal_thought": "Your step-by-step mathematical reasoning for how you calculated the scores. You must explain how each score was calculated for every category.",
+  "isComparisonReady": boolean (true ONLY if you are at Step 5/6),
+  "nextState": "The next conversation state (e.g. Step 2: COLLECTING_NAMES)",
+  "collectedBikes": ["Updated array of bike names confirmed in memory"],
+  "comparisonData": {
+     "bikes": [{ "name": "...", "totalScore": 0 }],
+     "categoryScores": [ { "category": "...", "bikeScores": [] } ]
+  }
 }
+
+CRITICAL RULES:
+- Never make up specs. 
+- All data MUST come from the fetch_bike_data tool.
+- You must explain to the user how each score was calculated in your reply.
 `;
 
     const model = genAI.getGenerativeModel({ 
       model: "gemini-flash-latest",
-      generationConfig: { responseMimeType: "application/json" },
-      systemInstruction: systemInstruction 
+      tools: bikeTools
     });
 
-    // Format chat history for Gemini
-    const contents = history.map(msg => ({
-      role: msg.role === 'bot' ? 'model' : 'user',
-      parts: [{ text: typeof msg.text === 'string' ? msg.text : JSON.stringify(msg) }]
-    }));
-    contents.push({ role: 'user', parts: [{ text: message }] });
+    const chat = model.startChat({
+      history: history.map(msg => ({
+        role: msg.role === 'bot' ? 'model' : 'user',
+        parts: [{ text: typeof msg.text === 'string' ? msg.text : JSON.stringify(msg) }]
+      })),
+      generationConfig: { responseMimeType: "application/json" }
+    });
 
-    const result = await model.generateContent({ contents });
-    const response = await result.response;
-    const text = response.text();
+    // Start of the ReAct Loop
+    let result = await chat.sendMessage([
+      { text: `SYSTEM: ${systemInstruction}` },
+      { text: message }
+    ]);
     
-    // As responseMimeType is set to 'application/json', the result is guaranteed to be a valid JSON string.
-    res.json(JSON.parse(text));
+    let resultResponse = result.response;
+    let call = resultResponse.functionCalls() ? resultResponse.functionCalls()[0] : null;
+
+    // Handle Function Call (Loop if Gemini needs multiple calls, though we usually do 1-by-1)
+    while (call) {
+      const toolResult = await localFetchBike(call.args.bikeName);
+      
+      result = await chat.sendMessage([
+        {
+          functionResponse: {
+            name: "fetch_bike_data",
+            response: { content: toolResult }
+          }
+        }
+      ]);
+      
+      resultResponse = result.response;
+      call = resultResponse.functionCalls() ? resultResponse.functionCalls()[0] : null;
+    }
+
+    const finalJson = JSON.parse(resultResponse.text());
+    res.json(finalJson);
 
   } catch (err) {
-    console.error("AI Error:", err.message);
-    res.status(500).json({ message: "AI Error", error: err.message });
+    console.error("Agentic Error:", err.message);
+    res.status(500).json({ message: "Agentic Error", error: err.message });
   }
 });
 
