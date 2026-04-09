@@ -102,8 +102,8 @@ const localFetchBike = async (name) => {
     const bikes = await getBikesData();
     const query = name.toLowerCase();
     // Fuzzy match: check if name or model is included
-    const bike = bikes.find(b => 
-      b.name.toLowerCase().includes(query) || 
+    const bike = bikes.find(b =>
+      b.name.toLowerCase().includes(query) ||
       b.model.toLowerCase().includes(query) ||
       query.includes(b.name.toLowerCase())
     );
@@ -171,7 +171,7 @@ CRITICAL RULES:
 - You must explain to the user how each score was calculated in your reply.
 `;
 
-    const model = genAI.getGenerativeModel({ 
+    const model = genAI.getGenerativeModel({
       model: "gemini-flash-latest",
       tools: bikeTools
     });
@@ -215,14 +215,14 @@ CRITICAL RULES:
       { text: `SYSTEM: ${systemInstruction}` },
       { text: message }
     ]));
-    
+
     let resultResponse = result.response;
     let call = resultResponse.functionCalls() ? resultResponse.functionCalls()[0] : null;
 
     // Handle Function Call
     while (call) {
       const toolResult = await localFetchBike(call.args.bikeName);
-      
+
       result = await callGeminiWithRetry(() => chat.sendMessage([
         {
           functionResponse: {
@@ -231,7 +231,7 @@ CRITICAL RULES:
           }
         }
       ]));
-      
+
       resultResponse = result.response;
       call = resultResponse.functionCalls() ? resultResponse.functionCalls()[0] : null;
     }
@@ -245,14 +245,14 @@ CRITICAL RULES:
       if (start !== -1 && end !== -1) {
         rawText = rawText.substring(start, end + 1);
       }
-      
+
       const finalJson = JSON.parse(rawText);
       res.json(finalJson);
     } catch (parseErr) {
       console.error("Parse Error. Raw text:", rawText);
-      res.status(500).json({ 
-        message: "AI returned invalid format", 
-        reply: "Sorry, I had a calculation error. Could you try rephrasing that?" 
+      res.status(500).json({
+        message: "AI returned invalid format",
+        reply: "Sorry, I had a calculation error. Could you try rephrasing that?"
       });
     }
 
@@ -297,25 +297,37 @@ app.post('/api/bikes/ai-add', async (req, res) => {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
-    
+
     const jsonMatch = text.match(/\[[\s\S]*\]/);
     if (!jsonMatch) throw new Error("AI failed to generate valid array");
-    
+
     const newBikes = JSON.parse(jsonMatch[0]);
-    
+    const current = await getBikesData();
+
+    // Filter out bikes that already exist (name + model match)
+    const uniqueNewBikes = newBikes.filter(nb => 
+      !current.some(cb => 
+        cb.name.toLowerCase().trim() === nb.name.toLowerCase().trim() && 
+        cb.model.toLowerCase().trim() === nb.model.toLowerCase().trim()
+      )
+    );
+
+    if (uniqueNewBikes.length === 0) {
+      return res.status(200).json({ message: "All bikes already exist in the inventory.", bikes: [] });
+    }
+
     // Save to DB or Local
     let savedCount = 0;
     if (isConnected) {
-      const results = await Bike.insertMany(newBikes);
+      const results = await Bike.insertMany(uniqueNewBikes);
       savedCount = results.length;
     } else {
-      const current = await getBikesData();
-      const updated = [...current, ...newBikes.map((b, i) => ({ ...b, _id: Date.now() + i }))];
+      const updated = [...current, ...uniqueNewNewBikes.map((b, i) => ({ ...b, _id: Date.now() + i }))];
       fs.writeFileSync(path.join(__dirname, 'bikes.json'), JSON.stringify(updated, null, 2));
-      savedCount = newBikes.length;
+      savedCount = uniqueNewBikes.length;
     }
 
-    res.status(201).json({ message: `Successfully added ${savedCount} bikes via AI.`, bikes: newBikes });
+    res.status(201).json({ message: `Successfully added ${savedCount} new bikes via AI.`, bikes: uniqueNewBikes });
   } catch (err) {
     console.error("AI Ingest Error:", err.message);
     res.status(500).json({ message: "AI Ingest Error", error: err.message });
@@ -398,7 +410,7 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     let users = await getUsersData();
-    
+
     const user = users.find(u => u.email === email);
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
