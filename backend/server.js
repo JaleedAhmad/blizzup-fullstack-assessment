@@ -176,6 +176,25 @@ CRITICAL RULES:
       tools: bikeTools
     });
 
+    // Helper for retries
+    const callGeminiWithRetry = async (fn, maxRetries = 3) => {
+      let delay = 1000;
+      for (let i = 0; i < maxRetries; i++) {
+        try {
+          return await fn();
+        } catch (err) {
+          const isRetryable = err.message.includes("503") || err.message.includes("429");
+          if (isRetryable && i < maxRetries - 1) {
+            console.log(`Gemini busy (attempt ${i + 1}/${maxRetries}). Retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            delay *= 2; // Exponential backoff
+            continue;
+          }
+          throw err;
+        }
+      }
+    };
+
     // Filter history to ensure it starts with a 'user' role (Gemini SDK requirement)
     const formattedHistory = history.map(msg => ({
       role: msg.role === 'bot' ? 'model' : 'user',
@@ -191,27 +210,27 @@ CRITICAL RULES:
       generationConfig: { responseMimeType: "application/json" }
     });
 
-    // Start of the ReAct Loop
-    let result = await chat.sendMessage([
+    // Start of the ReAct Loop with retries
+    let result = await callGeminiWithRetry(() => chat.sendMessage([
       { text: `SYSTEM: ${systemInstruction}` },
       { text: message }
-    ]);
+    ]));
     
     let resultResponse = result.response;
     let call = resultResponse.functionCalls() ? resultResponse.functionCalls()[0] : null;
 
-    // Handle Function Call (Loop if Gemini needs multiple calls, though we usually do 1-by-1)
+    // Handle Function Call
     while (call) {
       const toolResult = await localFetchBike(call.args.bikeName);
       
-      result = await chat.sendMessage([
+      result = await callGeminiWithRetry(() => chat.sendMessage([
         {
           functionResponse: {
             name: "fetch_bike_data",
             response: { content: toolResult }
           }
         }
-      ]);
+      ]));
       
       resultResponse = result.response;
       call = resultResponse.functionCalls() ? resultResponse.functionCalls()[0] : null;
