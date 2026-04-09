@@ -1,0 +1,139 @@
+[
+  {
+    "_id": "69d5fac701590e75d94ccb1c",
+    "name": "Honda CD 70",
+    "model": "2024 Standard",
+    "price": 157900,
+    "fuel_avg": 70,
+    "colors": [
+      "Red",
+      "Black"
+    ],
+    "engine_cc": 70,
+    "images": [
+      "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Honda%20CD%2070%202024%20Standard%20motorcycle?width=800&height=450&nologo=true",
+      "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Honda%20CD%2070%202024%20Standard%20motorcycle?width=800&height=450&nologo=true"
+    ],
+    "thumbnail": "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Honda%20CD%2070%202024%20Standard%20motorcycle?width=800&height=450&nologo=true",
+    "description": "The most popular economical bike in Pakistan, known for its fuel efficiency and durability."
+  },
+  {
+    "_id": "69d5fac701590e75d94ccb1d",
+    "name": "Yamaha YBR 125",
+    "model": "2024 Z DX",
+    "price": 466000,
+    "fuel_avg": 45,
+    "colors": [
+      "Metallic Gray",
+      "Racing Blue",
+      "Vivid Red"
+    ],
+    "engine_cc": 125,
+    "images": [
+      "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Yamaha%20YBR%20125%202024%20Z%20DX%20motorcycle?width=800&height=450&nologo=true",
+      "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Yamaha%20YBR%20125%202024%20Z%20DX%20motorcycle?width=800&height=450&nologo=true"
+    ],
+    "thumbnail": "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Yamaha%20YBR%20125%202024%20Z%20DX%20motorcycle?width=800&height=450&nologo=true",
+    "description": "A premium 125cc bike with sporty looks and a smooth ride, ideal for urban commuting."
+  },
+  {
+    "_id": "69d5fac701590e75d94ccb1e",
+    "name": "Honda CB 150F",
+    "model": "2024 Special Edition",
+    "price": 493900,
+    "fuel_avg": 35,
+    "colors": [
+      "Black",
+      "Silver",
+      "Red"
+    ],
+    "engine_cc": 150,
+    "images": [
+      "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Honda%20CB%20150F%202024%20Special%20Edition%20motorcycle?width=800&height=450&nologo=true",
+      "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Honda%20CB%20150F%202024%20Special%20Edition%20motorcycle?width=800&height=450&nologo=true"
+    ],
+    "thumbnail": "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Honda%20CB%20150F%202024%20Special%20Edition%20motorcycle?width=800&height=450&nologo=true",
+    "description": "Powerful 150cc engine with advanced suspension and a masculine design."
+  },
+  {
+    "_id": "69d5fac701590e75d94ccb1f",
+    "name": "Suzuki GS 150",
+    "model": "2024 Euro II",
+    "price": 382000,
+    "fuel_avg": 40,
+    "colors": [
+      "Black",
+      "Blue"
+    ],
+    "engine_cc": 150,
+    "images": [
+      "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Suzuki%20GS%20150%202024%20Euro%20II%20motorcycle?width=800&height=450&nologo=true",
+      "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Suzuki%20GS%20150%202024%20Euro%20II%20motorcycle?width=800&height=450&nologo=true"
+    ],
+    "thumbnail": "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Suzuki%20GS%20150%202024%20Euro%20II%20motorcycle?width=800&height=450&nologo=true",
+    "description": "Known for its heavy engine sound and comfortable long-ride capabilities."
+  },
+  {
+    "_id": "69d5fac701590e75d94ccb20",
+    "name": "Kawasaki Ninja 400",
+    "model": "2024 Sport",
+    "price": 2400000,
+    "fuel_avg": 25,
+    "colors": [
+      "Lime Green",
+      "Ebony"
+    ],
+    "engine_cc": 400,
+    "images": [
+      "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Kawasaki%20Ninja%20400%202024%20Sport%20motorcycle?width=800&height=450&nologo=true",
+      "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Kawasaki%20Ninja%20400%202024%20Sport%20motorcycle?width=800&height=450&nologo=true"
+    ],
+    "thumbnail": "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Kawasaki%20Ninja%20400%202024%20Sport%20motorcycle?width=800&height=450&nologo=true",
+    "description": "A high-performance sports bike for those who seek speed and premium engineering."
+  },
+  {
+    "name": "Harley-Davidson",
+    "model": "Fat Boy",
+    "price": 4500000,
+    "engine_cc": 1868,
+    "fuel_avg": 17,
+    "transmission": "Manual",
+    "colors": [
+      "Vivid Black",
+      "Billiard Gray",
+      "Midnight Crimson"
+    ],
+    "thumbnail": "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Harley-Davidson%20Fat%20Boy%20motorcycle?width=800&height=450&nologo=true",
+    "_id": 1775631902639
+  },
+  {
+    "name": "Ducati",
+    "model": "Panigale",
+    "price": 7200000,
+    "engine_cc": 1103,
+    "fuel_avg": 13,
+    "transmission": "Manual",
+    "colors": [
+      "Ducati Red",
+      "White Rosso",
+      "Black"
+    ],
+    "thumbnail": "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Ducati%20Panigale%20motorcycle?width=800&height=450&nologo=true",
+    "_id": 1775631902640
+  },
+  {
+    "name": "Triumph",
+    "model": "Rocket 3",
+    "price": 6000000,
+    "engine_cc": 2500,
+    "fuel_avg": 11,
+    "transmission": "Manual",
+    "colors": [
+      "Silver Ice",
+      "Matt Jet Black",
+      "Carnival Red"
+    ],
+    "thumbnail": "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20Triumph%20Rocket%203%20motorcycle?width=800&height=450&nologo=true",
+    "_id": 1775631902641
+  }
+]
