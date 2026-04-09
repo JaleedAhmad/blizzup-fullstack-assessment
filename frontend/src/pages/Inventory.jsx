@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import BikeCard from '../components/BikeCard';
 import { Search, SlidersHorizontal, AlertTriangle, Loader2 } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
 
 const Inventory = () => {
+  const { user } = useContext(AuthContext);
   const [bikes, setBikes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,12 +18,25 @@ const Inventory = () => {
         setBikes(response.data);
       } catch (err) {
         console.error("Error fetching bikes:", err);
+        setError("Could not load inventory.");
       } finally {
         setLoading(false);
       }
     };
     fetchBikes();
   }, []);
+
+  const handleDeleteBike = async (id) => {
+    if (!window.confirm("Are you sure you want to remove this bike from the inventory?")) return;
+
+    try {
+      await axios.delete(`/api/bikes/${id}`);
+      setBikes(prev => prev.filter(bike => bike._id !== id));
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Failed to delete bike. Please try again.");
+    }
+  };
 
   const filteredBikes = bikes.filter(bike => 
     bike.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -85,7 +100,7 @@ const Inventory = () => {
           ) : filteredBikes.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredBikes.map((bike) => (
-                <BikeCard key={bike._id} bike={bike} />
+                <BikeCard key={bike._id} bike={bike} onDelete={handleDeleteBike} />
               ))}
             </div>
           ) : (

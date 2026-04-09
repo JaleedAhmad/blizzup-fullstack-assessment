@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Trash2 } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
 
-const BikeCard = ({ bike }) => {
+const BikeCard = ({ bike, onDelete }) => {
+  const { user } = useContext(AuthContext);
   const formattedPrice = new Intl.NumberFormat('en-PK', {
     style: 'currency',
     currency: 'PKR',
@@ -10,7 +12,7 @@ const BikeCard = ({ bike }) => {
   }).format(bike.price);
 
   return (
-    <div className="group bg-white rounded-2xl overflow-hidden border border-slate-200 hover:border-blue-500/50 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 flex flex-col">
+    <div className="group bg-white rounded-2xl overflow-hidden border border-slate-200 hover:border-blue-500/50 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 flex flex-col relative">
       {/* Image Container */}
       <div className="relative aspect-video overflow-hidden bg-slate-100">
         <img 
@@ -18,6 +20,21 @@ const BikeCard = ({ bike }) => {
           alt={bike.name} 
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
+        
+        {/* Delete Button (Logged In Only) */}
+        {user && (
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              onDelete(bike._id);
+            }}
+            className="absolute top-3 left-3 bg-white/90 backdrop-blur p-2 rounded-xl text-red-500 shadow-sm hover:bg-red-500 hover:text-white transition-all active:scale-95 z-30"
+            title="Remove from inventory"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
+
         <div className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-full text-xs font-bold text-blue-600 shadow-sm">
           {bike.model}
         </div>

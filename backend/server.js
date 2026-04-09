@@ -205,6 +205,24 @@ app.post('/api/bikes/ai-add', async (req, res) => {
   }
 });
 
+// 5. Delete Bike
+app.delete('/api/bikes/:id', async (req, res) => {
+  try {
+    if (isConnected) {
+      const deletedBike = await Bike.findByIdAndDelete(req.params.id);
+      if (!deletedBike) return res.status(404).json({ message: "Bike Not Found" });
+    } else {
+      const bikes = await getBikesData();
+      const filtered = bikes.filter(b => b._id.toString() !== req.params.id);
+      if (bikes.length === filtered.length) return res.status(404).json({ message: "Bike Not Found" });
+      fs.writeFileSync(path.join(__dirname, 'bikes.json'), JSON.stringify(filtered, null, 2));
+    }
+    res.status(200).json({ message: "Bike deleted successfully", id: req.params.id });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error", error: err.message });
+  }
+});
+
 // --- AUTH HELPER ---
 const getUsersData = async () => {
   if (isConnected) {
