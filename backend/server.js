@@ -171,7 +171,7 @@ app.post('/api/bikes/ai-add', async (req, res) => {
         "fuel_avg": Number (km/l),
         "transmission": "Manual/Automatic",
         "colors": ["Color1", "Color2"],
-        "thumbnail": "/motorcycle-placeholder.png" (Always use exactly this string verbatim)
+        "thumbnail": "A generated URL precisely in this format: https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20[Brand]%20[Model]%20motorcycle?width=800&height=450&nologo=true (Replace [Brand] and [Model] with actual names, URL encoded, no spaces)"
       }
       
       Return ONLY a JSON array of these objects. No markdown.
