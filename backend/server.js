@@ -284,11 +284,15 @@ app.post('/api/bikes/ai-add', async (req, res) => {
         "fuel_avg": Number (km/l),
         "transmission": "Manual/Automatic",
         "colors": ["Color1", "Color2"],
-        "thumbnail": "https://image.pollinations.ai/prompt/Realistic%20photograph%20of%20a%20[NAME]%20[MODEL]%20motorcycle?width=800&height=450&nologo=true"
+        "thumbnail": "https://image.pollinations.ai/prompt/[DESCRIPTION]?width=800&height=450&nologo=true"
       }
       
-      CRITICAL: In the "thumbnail" URL, you MUST replace [NAME] and [MODEL] with the actual bike name and model you generated. 
-      The resulting URL must be valid and URL-encoded.
+      CRITICAL for "thumbnail": 
+      - You MUST generate a [DESCRIPTION] that is a highly specific, realistic photographic description of the bike.
+      - If it is a bicycle (like Trek Marlin), describe it as a mountain bike or road bike.
+      - If it is a motorcycle, describe it as a superbike, cruiser, etc.
+      - Example DESCRIPTION: "Professional studio side-view photograph of a 2024 Ducati Panigale V4 superbike, red color, white background, high resolution, 8k"
+      - The DESCRIPTION must be URL-encoded in the final URL.
       
       Return ONLY a JSON array of these objects. No markdown.
     `;
@@ -330,6 +334,49 @@ app.post('/api/bikes/ai-add', async (req, res) => {
   } catch (err) {
     console.error("AI Ingest Error:", err.message);
     res.status(500).json({ message: "AI Ingest Error", error: err.message });
+  }
+});
+
+// [TEMP] 4.5 Administrative Repair Image Endpoint
+app.get('/api/bikes/admin/repair-images', async (req, res) => {
+  try {
+    const bikes = await getBikesData();
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+
+    for (const bike of bikes) {
+      const prompt = `
+        Create a highly specific, URL-encoded descriptive prompt for an AI image generator for this vehicle:
+        Name: ${bike.name}
+        Model: ${bike.model}
+        
+        Rules:
+        - If it's a Trek Marlin, it is a MOUNTAIN BIKE.
+        - If it's a Ducati or Kawasaki, it is a SUPERBIKE.
+        - If it's a Harley, it is a CRUISER.
+        - Format: "Professional studio side-view photograph of a [REALISTIC DESCRIPTION], white background, high resolution, 8k"
+        
+        Return ONLY the URL-encoded description string. No other text.
+      `;
+
+      const result = await callGeminiWithRetry(() => model.generateContent(prompt));
+      const description = result.response.text().trim().replace(/['"]/g, '');
+      const encodedDescription = encodeURIComponent(description);
+      const newThumbnail = `https://image.pollinations.ai/prompt/${encodedDescription}?width=800&height=450&nologo=true`;
+
+      if (isConnected) {
+        await Bike.findByIdAndUpdate(bike._id, { thumbnail: newThumbnail });
+      } else {
+        const current = await getBikesData();
+        const bIdx = current.findIndex(b => b._id.toString() === bike._id.toString());
+        if (bIdx !== -1) {
+          current[bIdx].thumbnail = newThumbnail;
+          fs.writeFileSync(path.join(__dirname, 'bikes.json'), JSON.stringify(current, null, 2));
+        }
+      }
+    }
+    res.json({ message: "Repair complete!", count: bikes.length });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
