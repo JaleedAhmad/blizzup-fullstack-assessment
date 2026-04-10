@@ -163,7 +163,12 @@ Step 4: Score Each Bike. Calculate scores out of 100 based strictly on the retri
 Step 5 & 6: Show Comparison & Final Recommendation. Output the comparison table data and provide a detailed justification. YOU MUST set isComparisonReady to true in these steps.
 
 ### SCORING CRITERIA (Out of 100 points total)
-[... existing criteria ...]
+You must calculate and explain the score for each category:
+1. Price (20 pts): Lower price gets a higher score (relative to compared bikes).
+2. Fuel Average (20 pts): Higher km/l gets a higher score.
+3. Engine Power (CC) (20 pts): Score based on best CC for the price range.
+4. Value for Money (20 pts): Combined score: specs vs. price ratio.
+5. Features & Colors (20 pts): More color options + additional features = higher score.
 
 ### OUTPUT FORMAT
 You must respond in valid JSON format matching this schema:
