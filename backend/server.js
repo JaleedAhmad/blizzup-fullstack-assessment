@@ -341,7 +341,7 @@ app.post('/api/bikes/ai-add', async (req, res) => {
 app.get('/api/bikes/admin/repair-images', async (req, res) => {
   try {
     const bikes = await getBikesData();
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     for (const bike of bikes) {
       const prompt = `
