@@ -188,7 +188,7 @@ CRITICAL RULES:
 `;
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash-latest",
+      model: "gemini-2.0-flash",
       tools: bikeTools
     });
 
@@ -267,7 +267,7 @@ app.post('/api/bikes/ai-add', async (req, res) => {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `
       You are a technical data assistant for a premium bike dealership.
