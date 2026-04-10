@@ -179,17 +179,14 @@ You must respond in valid JSON format matching this schema:
   "nextState": "Step ...",
   "collectedBikes": ["..."],
   "comparisonData": {
-     "bikes": [{ "name": "...", "totalScore": 0 }],
-     "categoryScores": [ { "category": "...", "bikeScores": [] } ]
+     "bikes": [{ "name": "...", "totalScore": 0 }], // Total Score must be sum of category scores (max 100)
+     "categoryScores": [ { "category": "...", "bikeScores": [] } ] // Each score must be 0-20
   }
 }
 
 CRITICAL RULES:
-- If you have collected enough bikes and are making a recommendation, isComparisonReady MUST be true.
-- If isComparisonReady is true, comparisonData MUST be fully populated with actual scores.
-- Never make up specs. 
-- All data MUST come from the fetch_bike_data tool.
-- You must explain to the user how each score was calculated in your reply or thought.
+- Each individual category score MUST be between 0 and 20.
+- The Overall Match (totalScore) MUST be the sum of these 5 categories (max 100).
 `;
 
     const model = genAI.getGenerativeModel({

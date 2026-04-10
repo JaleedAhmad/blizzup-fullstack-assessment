@@ -151,17 +151,15 @@ const ChatWindow = () => {
                                 const colors = ['bg-blue-600', 'bg-amber-500', 'bg-emerald-500', 'bg-purple-500', 'bg-rose-500'];
                                 const barColor = colors[bIdx % colors.length];
                                 return (
-                                  <td key={bIdx} className="px-6 py-4 border-r border-slate-100 last:border-0">
                                     <div className="flex flex-col gap-1.5">
                                       <div className="flex justify-between text-[10px] font-bold text-slate-400">
                                         <span>SCORE</span>
-                                        <span className="text-slate-600">{score}/100</span>
+                                        <span className="text-slate-600">{score}/20</span>
                                       </div>
                                       <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                                        <div className={`h-full ${barColor} rounded-full transition-all duration-1000`} style={{ width: `${score}%` }}></div>
+                                        <div className={`h-full ${barColor} rounded-full transition-all duration-1000`} style={{ width: `${(score/20)*100}%` }}></div>
                                       </div>
                                     </div>
-                                  </td>
                                 );
                               })}
                             </tr>
