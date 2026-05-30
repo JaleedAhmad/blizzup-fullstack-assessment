@@ -1,8 +1,16 @@
+<div align="center">
+
 # 🏍️ Blizzup Agentic Bike Dealership
+
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Node.js](https://img.shields.io/badge/node.js-%2343853D.svg?style=for-the-badge&logo=node.js&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![Tailwind CSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
 A sophisticated, full-stack AI-driven bike dealership platform that leverages **Agentic AI** to provide deep technical comparisons, mathematical scoring, and automated inventory management.
 
----
+</div>
 
 ## 🏗️ System Architecture
 
@@ -26,14 +34,37 @@ graph TD
     UI -- "Render: Accordion + Table" --> User
 ```
 
----
+## 📂 Project Directory Map
+
+```text
+blizzup-fullstack-assessment-main/
+├── backend/                  # Express.js API & AI Agent Logic
+│   ├── models/               # Mongoose Database Schemas
+│   │   ├── Bike.js           # Bike inventory schema
+│   │   └── User.js           # User schema
+│   ├── server.js             # Main backend application entry point
+│   ├── seed.js               # Database seeding utility
+│   └── package.json          # Backend dependencies
+├── frontend/                 # React UI Application
+│   ├── public/               # Static assets
+│   ├── src/
+│   │   ├── components/       # Reusable React components
+│   │   ├── context/          # Global state management
+│   │   ├── layouts/          # Application structure layouts
+│   │   ├── pages/            # Main views
+│   │   ├── App.jsx           # Root application component
+│   │   └── main.jsx          # React DOM mounting
+│   ├── tailwind.config.js    # Tailwind CSS configuration
+│   └── vite.config.js        # Vite bundler configuration
+└── README.md                 # Project documentation
+```
 
 ## ✨ Key Features
 
 ### 1. Agentic AI Comparison
 - **Strict 6-Step Flow**: The agent maintains a state machine (Greeting → Collection → Analysis → Scoring → Recommendation).
 - **Function Calling**: Real-time database retrieval using specific tools.
-- **Explainable AI**: transparent "Thinking Accordions" that show the AI's internal mathematical reasoning before the final verdict.
+- **Explainable AI**: Transparent "Thinking Accordions" that show the AI's internal mathematical reasoning before the final verdict.
 
 ### 2. Intelligent Scoring System
 - Automatic scoring across **5 mandatory metrics**:
@@ -48,16 +79,13 @@ graph TD
 - **AI Bulk Ingest**: Add multiple bikes by simply listing their names. The AI fetches specs and generates high-quality photographic prompts.
 - **Vehicle Intelligence**: Distinguishes between Mountain Bikes and Superbikes to ensure accurate image generation.
 
----
-
 ## 🛠️ Tech Stack
 
-- **Frontend**: React, Vercel, Tailwind CSS, Lucide Icons.
-- **Backend**: Node.js, Express, Render, Mongoose.
+- **Frontend**: React, Vite, Tailwind CSS, Lucide Icons.
+- **Backend**: Node.js, Express, Mongoose.
 - **AI/ML**: Google Gemini (via `@google/generative-ai`), Pollinations.ai (Image generation).
 - **Database**: MongoDB Atlas.
-
----
+- **Deployment**: Vercel (Frontend), Render (Backend).
 
 ## 🚀 Getting Started
 
@@ -90,16 +118,12 @@ JWT_SECRET=your_jwt_secret
    npm run dev
    ```
 
----
-
 ## 🛡️ Administrative Features
 
 ### AI Image Repair
 We included a self-healing utility to fix incorrect or low-quality thumbnails in the database. 
 - **Endpoint**: `GET /api/bikes/admin/repair-images` (Used internally to refresh images to professional quality).
 - **Duplicate Check**: The system automatically prevents the same bike/model combination from being added twice.
-
----
 
 ## 📝 Assessment Compliance
 This project was built to fulfill the "Fullstack + AI Developer" assessment. It fulfills all mandatory requirements:
@@ -110,4 +134,7 @@ This project was built to fulfill the "Fullstack + AI Developer" assessment. It 
 - [x] AI Bulk Ingest Feature
 
 ---
-**Created by Antigravity for Blizzup Technologies.**
+
+<div align="center">
+  <i>Created by Antigravity for Blizzup Technologies.</i>
+</div>
